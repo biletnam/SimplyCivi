@@ -17,11 +17,12 @@ if (theme_get_setting('SimplyCivi_import_htmlmailings')) {
  * Implements HOOK_theme().
  */
 function SimplyCivi_theme(&$existing, $type, $theme, $path) {
-  if (!db_is_active()) {
+  try {
+    include_once './' . drupal_get_path('theme', 'SimplyCivi') . '/template.theme-registry.inc';
+    return _SimplyCivi_theme($existing, $type, $theme, $path);
+  } catch (Exception $e) {
     return array();
   }
-  include_once './' . drupal_get_path('theme', 'SimplyCivi') . '/template.theme-registry.inc';
-  return _SimplyCivi_theme($existing, $type, $theme, $path);
 }
 
 /**
@@ -45,12 +46,12 @@ function SimplyCivi_preprocess_page(&$vars) {
     $text = ($vars['site_name']) ? $logo_img . $text : $logo_img;
   }
   $vars['logo_block'] = (!$vars['site_name'] && !$vars['logo']) ? '' : l($text, '', array('attributes' => array('title' => $title . $site_slogan), 'html' => !empty($logo_img)));
-
+/*
   //Play nicely with the page_title module if it is there.
   if (!module_exists('page_title')) {
     // Fixup the $head_title and $title vars to display better.
     $title = drupal_get_title();
-    $headers = drupal_get_headers();
+    $headers = drupal_get_http_header();
 
     // if this is a 403 and they aren't logged in, tell them they need to log in
     if (strpos($headers, 'HTTP/1.1 403 Forbidden') && !$user->uid) {
@@ -110,8 +111,8 @@ function SimplyCivi_preprocess_page(&$vars) {
   }
 
   // Make sure framework styles are placed above all others.
-  $vars['css_alt'] = SimplyCivi_css_reorder($vars['css']);
-  $vars['styles'] = drupal_get_css($vars['css_alt']);
+ /* $vars['css_alt'] = SimplyCivi_css_reorder($vars['css']);
+  $vars['styles'] = drupal_get_css($vars['css_alt']);*/
 
   /* I like to embed the Google search in various places, uncomment to make use of this
   // setup search for custom placement
@@ -244,7 +245,8 @@ function SimplyCivi_preprocess_box(&$vars) {
  *   A string containing an HTML link to the user's page if the passed object
  *   suggests that this is a site user. Otherwise, only the username is returned.
  */
-function SimplyCivi_username($object) {
+function SimplyCivi_username($arguments) {
+  $object = $arguments['object'];
   if ($object->uid && $object->name) {
     // Shorten the name when it is too long or it will break many tables.
     if (drupal_strlen($object->name) > 20) {
@@ -304,7 +306,8 @@ function SimplyCivi_help() {
  *   An array containing the breadcrumb links.
  * @return a string containing the breadcrumb output.
  */
-function SimplyCivi_breadcrumb($breadcrumb) {
+function SimplyCivi_breadcrumb($arguments) {
+  $breadcrumb = $arguments["breadcrumb"];
   // Don't add the title if menu_breadcrumb exists. TODO: Add a settings 
   // checkbox to optionally control the display.
   if (!module_exists('menu_breadcrumb') && count($breadcrumb) > 0) {
@@ -445,7 +448,8 @@ function SimplyCivi_trim_text($text, $length = 150) {
  * the same name as a framework style. This can be removed once Drupal supports
  * weighted styles.
  */
-function SimplyCivi_css_reorder($css) {
+/*function SimplyCivi_css_reorder($arguments) {
+  $css = $arguments['css'];
   global $theme_info, $base_theme_info;
 
   // Dig into the framework .info data.
@@ -485,4 +489,4 @@ function SimplyCivi_css_reorder($css) {
 
   return $css;
 }
-
+*/

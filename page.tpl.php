@@ -1,32 +1,6 @@
 <?php
 // $Id: page.tpl.php,v 1.0 kylejaster Exp $ ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="<?php print $language->language ?>" lang="<?php print $language->language ?>">
-<head>
-  <title><?php print $head_title ?></title>
-  <meta http-equiv="content-language" content="<?php print $language->language ?>" />
-  <?php print $meta; ?>
-  <?php print $head; ?>
-  <?php print $styles; ?>
-  <!--[if lte IE 7]>
-    <link rel="stylesheet" href="<?php print $path_parent; ?>framework/ie.css" type="text/css" media="screen, projection">
-    <link href="<?php print $path_parent; ?>css/ie.css" rel="stylesheet"  type="text/css"  media="screen, projection" />
-    <?php $styles_ie_rtl['ie']; ?>
-  <![endif]-->
-  <!--[if lte IE 6]>
-    <link href="<?php print $path_parent; ?>css/ie6.css" rel="stylesheet"  type="text/css"  media="screen, projection" />
-    <?php $styles_ie_rtl['ie6']; ?>
-  <![endif]-->
-  <?php print $scripts ?>
-
-</head>
-
-<body class="<?php print $body_classes; ?>">
-
 <div class="container">
-  
   <div id="header-wrapper">
   <div id="header">
       <div id="status">
@@ -68,7 +42,7 @@
     <?php
       
       if ($tabs != '') {
-        print '<div class="tabs">'. $tabs .'</div>';
+        print '<div class="tabs">'. render($page['tabs']) .'</div>';
       }
 
       if ($messages != '') {
@@ -79,45 +53,40 @@
         print '<h2>'. $title .'</h2>';
       }
 
-      print $help; // Drupal already wraps this one in a class
-
-      print $content;
-      print $feed_icons;
+      print render($page['help']); // Drupal already wraps this one in a class
+     // print_r($page);
+      print render($page['content']);
+      //print $feed_icons;
     ?>
 
-    <?php if ($footer_message || $footer): ?>
+    <?php if ($footer): ?>
       <div id="footer" class="clear">
-        <?php if ($footer): ?>
-          <?php print $footer; ?>
-        <?php endif; ?>
-        <?php if ($footer_message): ?>
-          <div id="footer-message"><?php print $footer_message; ?></div>
-        <?php endif; ?>
+          <?php print render($page['footer']); ?>
       </div>
     <?php endif; ?>
 
   </div>
   
   </div>
-  <?php if ($left || isset($primary_links) || isset($secondary_links)): ?>
-    <div id="left-sidebar" class="sidebar-wrapper">
-        <div id="left-sidebar-handle"><span class="ui-icon ui-icon-arrowthickstop-1-e"></span></div>
+  <?php if ($sidebar_first || isset($main_menu) || isset($secondary_menu)): ?>
+    <div id="sidebar_first-sidebar" class="sidebar-wrapper">
+        <div id="sidebar_first-sidebar-handle"><span class="ui-icon ui-icon-arrowthickstop-1-e"></span></div>
         <div class="sidebar-contents">
-            <?php if (isset($primary_links)) : ?>
-              <?php print theme('links', $primary_links, array('id' => 'nav', 'class' => 'links primary-links')) ?>
+            <?php if (isset($main_menu)) : ?>
+              <?php print theme('links', $main_menu, array('id' => 'nav', 'class' => 'links primary-links')) ?>
             <?php endif; ?>
-            <?php if (isset($secondary_links)) : ?>
-              <?php print theme('links', $secondary_links, array('id' => 'subnav', 'class' => 'links secondary-links')) ?>
+            <?php if (isset($secondary_menu)) : ?>
+              <?php print theme('links', $secondary_menu, array('id' => 'subnav', 'class' => 'links secondary-links')) ?>
             <?php endif; ?>
-            <?php print $left; ?>
+            <?php print render($page['sidebar_first']); ?>
         </div>
     </div>
   <?php endif ?>
-  <?php if ($right): ?>
-    <div id="right-sidebar" class="sidebar-wrapper">
-        <div id="right-sidebar-handle"><span class="ui-icon ui-icon-arrowthickstop-1-w"></span></div>
+  <?php if ($sidebar_second): ?>
+    <div id="sidebar_second-sidebar" class="sidebar-wrapper">
+        <div id="sidebar_second-sidebar-handle"><span class="ui-icon ui-icon-arrowthickstop-1-w"></span></div>
         <div class="sidebar-contents">
-            <?php print $right; ?>
+            <?php print render($page['sidebar_second']); ?>
         </div>
     </div>
   <?php endif ?>
@@ -142,9 +111,3 @@
   <?php endif; ?>
   
 
-  <?php print $closure; ?>
-
-</div>
-
-</body>
-</html>
